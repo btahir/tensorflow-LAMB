@@ -87,9 +87,9 @@ class LAMBOptimizer(optimizer.Optimizer):
     m_t = m.assign(beta1_t * m + (1. - beta1_t) * grad)
 
     # add l2 normalizations and set ratio
-    r1 = tf.math.l2_normalize(var)
+    r1 = tf.sqrt(tf.reduce_sum(tf.square(var)))
     step = m_t / (tf.sqrt(v_t) + eps) + wd_lambda * var
-    r2 = tf.math.l2_normalize(step)
+    r2 = tf.sqrt(tf.reduce_sum(tf.square(step)))
 
     var_update = state_ops.assign_sub(var, lr_t * tf.minimum(r1 / r2, 10) * step) #set upper bound of 10 for r1/r2 / section 3.3.1 of LAMB paper
     return control_flow_ops.group(*[var_update, v_t, m_t])
