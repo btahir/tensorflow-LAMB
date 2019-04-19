@@ -8,5 +8,5 @@ The only function to change is the _apply_dense function.
 Since TF code does the actual math in C++ (hence the mysterious training_ops.apply_adam function returned), 
 I started with the Adam implementation here for __apply_dense: https://github.com/angetato/Optimizers-for-Tensorflow/blob/master/tf_utils/Adam.py
 
-
+Working through some issues. Optimizer is not working as expected.
 
