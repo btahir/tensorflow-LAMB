@@ -31,6 +31,7 @@ class LAMBOptimizer(optimizer.Optimizer):
     self._beta1_t = None
     self._beta2_t = None
     self._epsilon_t = None
+    self._wd_t = None
 
   def _get_beta_accumulators(self):
     with ops.init_scope():
@@ -64,11 +65,13 @@ class LAMBOptimizer(optimizer.Optimizer):
     beta1 = self._call_if_callable(self._beta1)
     beta2 = self._call_if_callable(self._beta2)
     epsilon = self._call_if_callable(self._epsilon)
+    wd = self._call_if_callable(self._wd)
 
     self._lr_t = ops.convert_to_tensor(lr, name="learning_rate")
     self._beta1_t = ops.convert_to_tensor(beta1, name="beta1")
     self._beta2_t = ops.convert_to_tensor(beta2, name="beta2")
     self._epsilon_t = ops.convert_to_tensor(epsilon, name="epsilon")
+    self._wd_t = ops.convert_to_tensor(wd, name="wd")
 
   def _apply_dense(self, grad, var):
     lr_t = math_ops.cast(self._lr_t, var.dtype.base_dtype)
@@ -76,7 +79,7 @@ class LAMBOptimizer(optimizer.Optimizer):
     beta1_t = math_ops.cast(self._beta1_t, var.dtype.base_dtype)
     beta2_t = math_ops.cast(self._beta2_t, var.dtype.base_dtype)
     eps = math_ops.cast(self._epsilon_t, var.dtype.base_dtype)
-    wd_lambda = 0.01
+    wd_lambda = math_ops.cast(self._wd_t, var.dtype.base_dtype)
 
     v = self.get_slot(var, "v")
     v_t = v.assign(beta2_t * v + (1. - beta2_t) * grad**2)
